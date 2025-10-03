@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Brain Clicker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    #brainPower {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    #hint {
+      font-size: 18px;
+      color: gray;
+      margin-bottom: 40px;
+    }
+    .shop {
+      margin-top: 20px;
+      display: none;
+    }
+    .upgrade {
+      margin: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="brainPower">🧠 Brain Power: 0</div>
+  <div id="hint">Press SPACEBAR to think harder! | Press P to open shop</div>
+
+  <div class="shop" id="shop">
+    <h2>🛒 Brain Shop</h2>
+    <div class="upgrade">
+      <button onclick="buyUpgrade(2, 10)">+2/sec (Cost: 10🧠)</button>
+    </div>
+    <div class="upgrade">
+      <button onclick="buyUpgrade(10, 20)">+10/sec (Cost: 20🧠)</button>
+    </div>
+    <div class="upgrade">
+      <button onclick="buyUpgrade(20, 50)">+20/sec (Cost: 50🧠)</button>
+    </div>
+    <div class="upgrade">
+      <button onclick="buyUpgrade(50, 100)">+50/sec (Cost: 100🧠)</button>
+    </div>
+  </div>
+
+  <script>
+    let brainPower = 0;
+    let autoThinkRate = 0;
+    const display = document.getElementById('brainPower');
+    const shop = document.getElementById('shop');
+
+    // milestone tracker
+    const milestones = [
+      { threshold: 500, bonus: 500 },
+      { threshold: 100000, bonus: 10000 },
+      { threshold: 1000000, bonus: 100000 },
+      { threshold: 10000000, bonus: 1000000 },
+      { threshold: 50000000, bonus: 10000000 },
+      { threshold: 1000000000, bonus: 50000000 }
+    ];
+    const unlocked = new Set();
+
+    function updateDisplay() {
+      display.textContent = `🧠 Brain Power: ${Math.floor(brainPower)}`;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        brainPower++;
+        updateDisplay();
+      }
+      if (e.code === 'KeyP') {
+        shop.style.display = shop.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+
+    setInterval(() => {
+      // check milestones
+      for (const m of milestones) {
+        if (brainPower >= m.threshold && !unlocked.has(m.threshold)) {
+          autoThinkRate += m.bonus;
+          unlocked.add(m.threshold);
+        }
+      }
+
+      brainPower += autoThinkRate / 10;
+      updateDisplay();
+    }, 100);
+
+    function buyUpgrade(rate, cost) {
+      if (brainPower >= cost) {
+        brainPower -= cost;
+        autoThinkRate += rate;
+        updateDisplay();
+      } else {
+        alert("Not enough brain power!");
+      }
+    }
+  </script>
+</body>
+</html>
